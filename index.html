@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>8 Rainhas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #tabuleiro {
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      width: 400px;
+      border: 2px solid #333;
+    }
+
+    .casa {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .preta {
+      background-color: #666;
+      color: white;
+    }
+
+    .branca {
+      background-color: #f0d9b5;
+      color: black;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Problema das 8 Rainhas</h1>
+  <div id="tabuleiro"></div>
+  <button onclick="mostrarProxima()">Próxima Solução</button>
+
+  <script>
+    const N = 8;
+    let todasSolucoes = [];
+    let indiceSolucao = 0;
+
+    function posicaoSegura(tabuleiro, linha, coluna) {
+      for (let i = 0; i < linha; i++) {
+        if (
+          tabuleiro[i] === coluna ||
+          tabuleiro[i] - i === coluna - linha ||
+          tabuleiro[i] + i === coluna + linha
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function resolver(tabuleiro = [], linha = 0) {
+      if (linha === N) {
+        todasSolucoes.push([...tabuleiro]);
+        return;
+      }
+      for (let coluna = 0; coluna < N; coluna++) {
+        if (posicaoSegura(tabuleiro, linha, coluna)) {
+          tabuleiro[linha] = coluna;
+          resolver(tabuleiro, linha + 1);
+        }
+      }
+    }
+
+    function desenharTabuleiro(tabuleiro) {
+      const container = document.getElementById("tabuleiro");
+      container.innerHTML = "";
+      for (let linha = 0; linha < N; linha++) {
+        for (let coluna = 0; coluna < N; coluna++) {
+          const casa = document.createElement("div");
+          casa.classList.add("casa");
+          if ((linha + coluna) % 2 === 0) {
+            casa.classList.add("branca");
+          } else {
+            casa.classList.add("preta");
+          }
+          if (tabuleiro[linha] === coluna) {
+            casa.textContent = "♕"; 
+          }
+          container.appendChild(casa);
+        }
+      }
+    }
+
+    function mostrarProxima() {
+      if (todasSolucoes.length === 0) return;
+      desenharTabuleiro(todasSolucoes[indiceSolucao]);
+      indiceSolucao = (indiceSolucao + 1) % todasSolucoes.length;
+    }
+
+    resolver(); // Gera todas as soluções
+    mostrarProxima(); 
+  </script>
+</body>
+</html>
